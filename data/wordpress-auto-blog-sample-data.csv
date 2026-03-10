@@ -1,0 +1,11 @@
+Post Type,Pillar,Cluster,Post Title,Intent,Primary Keyword,Brand Focus,Secondary Keywords,Primary Target Audience (Roles),Secondary Target Audience (Business Types),Core Pain Points/Motivations,Target Word Count,Completed
+Pillar,Pillar Post1 Title,No,xx,Informational/Buying,xx,xx,xx,xx,xx,xx,3500,Yes
+Pillar,Pillar Post2 Title,No,xx,Comparison/Informational/Buying,xx,xx,xx,xx,xx,xx,4000,Yes
+Pillar,Pillar Post3 Title,No,xx,Informational/Buying,xx,xx,xx,xx,xx,xx,3500,Yes
+Pillar,Pillar Post4 Title,No,xx,Informational/Buying,xx,xx,xx,xx,xx,xx,3500,Yes
+Pillar,Pillar Post5 Title,No,xx,Informational/Buying/Educational,xx,xx,xx,xx,xx,xx,3500,Yes
+Cluster,Cluster Post1 - Pillar Post1 Title,Pillar Post1 Title,xx,Informational/Buying,xx,xx,xx,xx,xx,xx,2400,Yes
+Cluster,Cluster Post2 - Pillar Post1 Title,Pillar Post1 Title,xx,Buying,xx,xx,xx,xx,xx,xx,2400,Yes
+Cluster,Cluster Post3 - Pillar Post1 Title,Pillar Post1 Title,xx,Informational,xx,xx,xx,xx,xx,xx,2400,No
+Cluster,Cluster Post1 - Pillar Post2 Title,Pillar Post2 Title,xx,Informational,xx,xx,xx,xx,xx,xx,2400,No
+Cluster,Cluster Post2 - Pillar Post2 Title,Pillar Post2 Title,xx,Informational/Buying,xx,xx,xx,xx,xx,xx,2400,No
