@@ -1,0 +1,663 @@
+{
+  "name": "SAH Kitchen Blog Automation",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -288,
+        0
+      ],
+      "id": "a71cdc92-432a-4e5e-97e6-c26f45ce2a90",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "content": "## Post Plan",
+        "height": 480,
+        "width": 336
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        960,
+        -256
+      ],
+      "id": "c7d9179b-4a81-4784-81d1-f993da501ce0",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Writing Blog",
+        "height": 480,
+        "width": 384
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1296,
+        -256
+      ],
+      "id": "a3762cc0-b041-453a-8a15-f6f63cf75ebe",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## Research",
+        "height": 240,
+        "width": 256
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        544,
+        -64
+      ],
+      "id": "a495a3f2-1bc7-441a-8d2e-fa2e75a4daf8",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## Preliminary Plan",
+        "height": 512,
+        "width": 368
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        176,
+        -64
+      ],
+      "id": "2575902e-ec64-47a8-992b-466380bce4bf",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=DO NOT OUTPUT ANYTHING OTHER THAN THE CODE. I want you to follow the layout of the template as a guide to generate the WordPress code for a blog post. Here are the rules to follow:\n\nThe blog post should have a title, estimated reading time, key takeaways, table of contents, body, and FAQ in this order. Make it engaging by using italics, dot points, quotes, bold, spaces, and sometimes new lines. Never use emojis.\n\nThe blog post will have some URLs referenced next to certain keyphrases to show where the info came from. You must hyperlink the keyphrase with the provided URL so that the reader can click on the referenced URL. It is critical you get this right.\n\nWrap the entire content in a container <div> with inline CSS that sets the text color to black (#000), uses a legible font such as Arial, sans-serif, and sets line-height to 1.6.\n\nEnsure that all non-heading text elements (e.g., paragraphs, list items) have an inline style or embedded style that sets their font size to 20px and color to black (#000) using !important to override theme styles.\n\nHyperlinks, points in the table of contents, and FAQ questions must be styled in blue (#00c2ff).\n\nAll headings and subheadings should have an underline implemented via a bottom border in blue (#00c2ff) with appropriate padding.\n\nPlace a double break (<br><br>) between each section to improve readability.\n\nDo not output any extra text or mention code tags like HTML. Just output the HTML code.\n\nBlog post:\n{{ $json.output }}\n\nPlease use a well formatted output.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        1776,
+        -192
+      ],
+      "id": "421a22ac-7283-4008-b32f-a7fa1c484d71",
+      "name": "HTML Version"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Create a slug for the following blog post:\n{{ $json.output }}\n\nkeep it max of 5 to 5 words (not more than 10 words), keep it seo optimized with\n\nPrimary keyword:\n{{ $('Post Input').item.json['Primary Keyword'] }}\n\nIntent:\n{{ $('Post Input').item.json.Intent }}\n\nKeywords:\n{{ $('Post Input').item.json.Keywords }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        2160,
+        -192
+      ],
+      "id": "9223dded-5175-46ad-a912-e528239c48ef",
+      "name": "slug",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "Ah3AyC6bmcvPBNXi",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Extract the blog post title from the following blog post (no additional comments please):\n{{ $('Blog Writer').item.json.candidates[0].content.parts[0].text }}\n\nThe blog post title must include the primary keyword {{ $('Post Input').item.json['Primary Keyword'] }} and must inform the user right away of what they can expect from reading the blog post."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        2528,
+        -192
+      ],
+      "id": "8ca9cd35-0505-464e-ae97-3bf94f613684",
+      "name": "Title",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "Ah3AyC6bmcvPBNXi",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Extract the blog post meta-description from the following blog post (no additional comments please):\n{{ $('Blog Writer').item.json.candidates[0].content.parts[0].text }}\n\nThe blog post meta-description must include the primary keyword {{ $('Post Input').item.json['Primary Keyword'] }} and must inform the user right away of what they can expect from reading the blog post."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        2896,
+        -192
+      ],
+      "id": "52284e7b-51fe-4bcf-af14-ec8a6de2ce7c",
+      "name": "Meta Description",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "Ah3AyC6bmcvPBNXi",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://www.searchapi.io/api/v1/search?engine=google_images",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "q",
+              "value": "={{ $('Title').item.json.content.parts[0].text }}"
+            },
+            {
+              "name": "gl",
+              "value": "us"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        3280,
+        -192
+      ],
+      "id": "915f9948-af11-4275-b025-63b9e6c9eaab",
+      "name": "Image",
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "wgp3zNp5gBb3J94S",
+          "name": "SerpAPI"
+        },
+        "httpHeaderAuth": {
+          "id": "qbmmhS4kr3RQhvvw",
+          "name": "SerpAPI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1b56b2cc-1e43-4898-a832-2cb20d361da5",
+              "name": "cover-image",
+              "value": "={{ $json.images[0].original.link }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3488,
+        -192
+      ],
+      "id": "412b7b8e-bdfb-4f2e-8e40-a44cf90e4689",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "title": "={{ $('Title').item.json.content.parts[0].text }}",
+        "additionalFields": {
+          "authorId": 1,
+          "content": "=<img src=\"{{ $json['cover-image'] }}\" alt=\"Cover Image\">{{ $('HTML Version').item.json.output }}",
+          "slug": "={{ $('slug').item.json.content.parts[0].text }}",
+          "status": "draft",
+          "postTemplate": {
+            "values": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.wordpress",
+      "typeVersion": 1,
+      "position": [
+        3696,
+        -192
+      ],
+      "id": "fb46b387-f106-4a73-bc6a-df9009c5239f",
+      "name": "Create a post",
+      "credentials": {
+        "wordpressApi": {
+          "id": "vN5RZvxsU8NPPDOw",
+          "name": "Wordpress account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an expert SEO content strategist and commercial kitchen equipment consultant.\n\nYour task is to create a PRELIMINARY CONTENT PLAN for a single blog post.\nThe post will later be fully researched and written by other agents in the workflow.\n\nINPUT VARIABLES:\n- Post type: {{ $json['Post Type'] }}.\n- Brand focus: {{ $json['Brand Focus'] }}.\n- Pillar: {{ $json.Pillar }}.\n- Cluster topic (only if Post type is Cluster): {{ $json.Cluster }}.\n- Primary keyword: {{ $json['Primary Keyword'] }}.\n- Secondary keywords: {{ $json['Secondary Keywords'] }}.\n- Search intent: {{ $json.Intent }}.\n- Primary Target Audience (Roles): {{ $json['Primary Target Audience (Roles)'] }}\n- Secondary Target Audience (Business Types): {{ $json['Secondary Target Audience (Business Types)'] }}\n- Target Audience Core Pain Points/Motivations: {{ $json['Core Pain Points/Motivations'] }}\n\nINSTRUCTIONS:\n1. Internally think step by step about the best angle and structure for this topic,\n   but DO NOT show your chain-of-thought. Only output the final structured plan.\n2. Ensure the plan:\n   - Matches the stated search intent.\n   - Uses the primary keyword in the title and at least one H2.\n   - Naturally weaves in secondary keywords as subtopics.\n   - Creates clear opportunities to mention or position {{ $json['Brand Focus'] }} products WITHOUT sounding like a hard sales pitch.\n3. Focus on creating VALUE for readers:\n   - Practical advice, checklists, examples, templates, or decision frameworks.\n   - Clear outcomes: what will the reader be able to do or decide after reading?\n\nOUTPUT FORMAT (JSON ONLY, no additional commentary):\n\n{\n  \"working_title\": \"SEO-optimized title using the primary keyword\",\n  \"angle\": \"1–2 sentence explanation of the unique angle or promise of this article\",\n  \"target_audience_refined\": \"Refined, specific audience description\",\n  \"search_intent_refined\": \"One of: informational / commercial / transactional / mixed, with 1–2 sentence rationale\",\n  \"primary_keyword\": \"{{ $json['Primary Keyword'] }}\",\n  \"secondary_keywords_to_target\": [\n    \"...\",\n    \"...\"\n  ],\n  \"main_reader_questions\": [\n    \"List 3–7 specific questions the target reader wants answered\"\n  ],\n  \"value_proposition_for_reader\": \"Short paragraph summarizing how this article will help the reader make a better decision or achieve a result.\",\n  \"business_objective_for_store\": \"How this article will support sahkitchenequipment.com (e.g., lead gen, product education, brand positioning).\",\n  \"proposed_h2_outline\": [\n    \"H2 section 1\",\n    \"H2 section 2\",\n    \"H2 section 3\",\n    \"...\"\n  ],\n  \"recommended_lead_magnet_or_tool\": [\n    {\n      \"type\": \"checklist | calculator | spec download | design template | ROI sheet\",\n      \"name\": \"Short name of the asset\",\n      \"where_to_place_in_article\": \"e.g., after H2 2\",\n      \"goal\": \"email capture | quote request | product education\"\n    }\n  ],\n  \"notes_for_research_agent\": [\n    \"Bulleted instructions on what the research agent should focus on: data points, standards, code requirements, competitor types, etc.\"\n  ]\n}\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        224,
+        0
+      ],
+      "id": "dd9dd20c-ad84-4bbf-be0b-fe04be3bb720",
+      "name": "Preliminary Plan"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a senior SEO editor and content strategist for sahkitchenequipment.com.\n\nYour task is to turn a preliminary content plan + research dossier\ninto a DETAILED ARTICLE PLAN that is ready for a writer.\n\nINPUTS:\n- Preliminary plan JSON: {{ $('Preliminary Plan').item.json.output }}\n- Research summary (Markdown): {{ $json.choices[0].message.content }}\n\nGOAL:\nCreate a fully specified outline that:\n- Can realistically outrank the current top results in quality and completeness.\n- Maximizes value for the reader (clear decisions, practical steps, realistic examples).\n- Naturally opens opportunities to showcase {{ $('Post Input').item.json['Brand Focus'] }} products where they are genuinely a good fit.\n- Aligns with the primary keyword: {{ $('Post Input').item.json['Primary Keyword'] }} and the defined search intent: {{ $('Post Input').item.json.Intent }}.\n\nINSTRUCTIONS:\n1. Internally reason step by step about:\n   - How to structure H2/H3s.\n   - Where to place data, comparisons, and brand mentions.\n   - What free tools or downloads are most compelling.\n   DO NOT reveal this chain-of-thought; only output the final plan.\n\n2. Upgrade the outline from the preliminary plan using the research:\n   - Add or adjust sections.\n   - Merge or remove weak or redundant sections.\n   - Add notes about examples, stats, or comparisons to include.\n\n3. Clearly mark:\n   - Internal link ideas to other pillar/cluster posts (describe them generically, e.g., “Link to our full combi oven buying guide”).\n   - External authority link opportunities (e.g., “Link to ENERGY STAR guidance for commercial ovens”).\n\n4. Make the plan implementable:\n   - Each section should include:\n     - Objective (what the reader should get from this section).\n     - Key points or arguments.\n     - Any specific data or proof to reference (from the research).\n     - Potential CTA or lead magnet placements.\n\nOUTPUT FORMAT (JSON ONLY):\n\n{\n  \"final_title\": \"Refined SEO title including primary keyword\",\n  \"meta_description\": \"155-160 character SEO meta description, including primary keyword and a strong value proposition.\",\n  \"url_slug_suggestion\": \"kebab-case-url-using-primary-keyword\",\n  \"estimated_word_count\": 1800,\n  \"primary_keyword\": \"{{ $('Post Input').item.json['Primary Keyword'] }}\",\n  \"secondary_keywords\": [\n    \"...\"\n  ],\n  \"tone_and_style_guidelines\": [\n    \"Direct, expert, but non-technical where possible\",\n    \"US English, spell out jargon once\",\n    \"Focus on ROI, practicality, and real-world constraints\"\n  ],\n  \"outline\": [\n    {\n      \"heading_level\": \"H1\",\n      \"heading_text\": \"Final H1\",\n      \"section_objective\": \"What this article promises overall\",\n      \"key_points\": [\n        \"...\"\n      ]\n    },\n    {\n      \"heading_level\": \"H2\",\n      \"heading_text\": \"Section title\",\n      \"section_objective\": \"1–2 sentence description of what this section should achieve\",\n      \"key_points\": [\n        \"Bullet point 1\",\n        \"Bullet point 2\",\n        \"Include data: [short description of data from research]\",\n        \"If relevant, where to introduce {{ $('Post Input').item.json['Brand Focus'] }} products\"\n      ],\n      \"suggested_subheadings_h3\": [\n        {\n          \"heading_text\": \"H3 title\",\n          \"key_points\": [\n            \"...\"\n          ]\n        }\n      ],\n      \"internal_link_ideas\": [\n        \"Describe what internal guide or comparison we should link to\"\n      ],\n      \"external_authority_link_ideas\": [\n        \"Describe what kind of external resource to link to (e.g., ENERGY STAR, manufacturer spec page)\"\n      ],\n      \"recommended_visuals\": [\n        \"Tables, diagrams, before/after examples, etc.\"\n      ],\n      \"cta_or_lead_magnet_placement\": [\n        \"Describe which CTA to place here and why (e.g., quote form, checklist download).\"\n      ]\n    }\n  ],\n  \"global_lead_magnet_recommendation\": {\n    \"type\": \"checklist | ROI calculator | spec bundle | template\",\n    \"name\": \"Name of the asset\",\n    \"short_description\": \"What it helps the reader do\",\n    \"ideal_promo_locations\": [\n      \"Which sections\"\n    ]\n  },\n  \"notes_for_writer\": [\n    \"Bulleted notes about tone, what NOT to do, and any nuances for this audience.\"\n  ]\n}\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        1008,
+        -192
+      ],
+      "id": "d616894a-0f65-48a0-ba66-8cab6edac403",
+      "name": "Detailed Post Plan"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a senior B2B content writer and subject-matter expert in commercial kitchen equipment,\nwriting for sahkitchenequipment.com.\n\nYour task is to write a COMPLETE, PUBLICATION-READY BLOG ARTICLE\nbased strictly on the provided detailed plan.\n\nINPUTS:\n- Detailed article plan (JSON): {{ $json.output }}\n- Target word count (approximate): {{ $('Post Input').item.json['Target Word Count'] }}\n- Brand focus (if any): {{ $('Post Input').item.json['Brand Focus'] }}\n\nWRITING OBJECTIVES:\n- Produce a clear, actionable, SEO-optimized article that genuinely helps the reader make better equipment decisions.\n- Respect the structure, headings, and notes from the detailed plan.\n- Naturally incorporate primary keyword \"{{ $('Post Input').item.json['Primary Keyword'] }}\" and secondary keywords where they fit,\n  WITHOUT keyword stuffing.\n- Present sahkitchenequipment.com as a helpful expert and solution provider,\n  not as pushy sales copy.\n\nSTYLE AND TONE:\n- Primary Target Audience (Roles): {{ $('Post Input').item.json['Primary Target Audience (Roles)'] }}\n- Secondary Target Audience (Business Types): {{ $('Post Input').item.json['Secondary Target Audience (Business Types)'] }}\n- Target Audience Core Pain Points/Motivations: {{ $('Post Input').item.json['Core Pain Points/Motivations'] }}\n- Voice: Expert, practical, and straightforward. Explain technical concepts in plain language.\n- Region: US English, examples grounded in US restaurant and foodservice context.\n- Avoid fluff, clichés, and generic statements. Prioritize specifics, frameworks, and examples.\n\nSEO & STRUCTURE REQUIREMENTS:\n1. Use Markdown formatting:\n   - One H1 at the top (from the plan).\n   - Logical H2 and H3 headings exactly following (or closely following) the outline.\n   - Bullet lists and numbered lists where they increase clarity.\n2. Intro:\n   - 2–4 short paragraphs that clearly state the problem, who this is for, and what they will learn/decide.\n3. Throughout the article:\n   - Explicitly answer the key reader questions identified in the plan.\n   - Use data and proof points from the research in a natural way (you can paraphrase them).\n   - Add charts, infographics, and similar custom images naturally wherever needed.\n   - When a section notes to mention a brand ({{ $('Post Input').item.json['Brand Focus'] }}),\n     explain WHY that type of product fits the use case instead of just naming it.\n4. CTAs and assets:\n   - Where the plan calls for CTAs or lead magnets (checklists, calculators, spec bundles),\n     write short, value-focused CTA copy that feels like a helpful suggestion, not a hard sell.\n   - Example pattern: “If you’re planning your first cloud kitchen, download our free checklist to make sure you don’t miss any critical equipment decisions.”\n5. Links:\n   - When the plan suggests an internal link, write anchor text that clearly describes the destination (e.g., “full combi oven buying guide” rather than “click here”).\n   - When the plan suggests an external authority link, refer to the institution or resource in text (e.g., “ENERGY STAR guidelines for commercial ovens”) but DO NOT invent exact URLs.\n\nCONSTRAINTS:\n- Do NOT change the primary angle or audience.\n- Do NOT output your reasoning or planning steps.\n- Do NOT add a separate “TL;DR” unless the outline explicitly includes it.\n\nOUTPUT:\n- Goal: Generate a complete, high-quality blog article based on the provided outline.\n- Format: Full article in Markdown only. DO NOT ask for permission to continue.\n- Instruction for Length: The article MUST include all sections outlined. If the article exceeds the maximum allowed output in a single response, continue the article immediately without any introductory or stopping text (no questions, no \"Part 2\" headings, no apologies) from the exact point where it cut off. Start the new output chunk immediately with the continuation of the last sentence or paragraph.\n- Begin with the H1 title line.\n- Then the body content following the outline.\n- At the very end, include a short “Next steps” or “Where to go from here” section that nudges the reader toward either:\n  - Requesting a quote,\n  - Downloading a resource, or\n  - Reading a closely related guide (as indicated in the plan).\n\nADDITIONAL DIRECTIVES:\n- At the very beginning of the article, insert a relevant image or chart, such as an infographic or data visualization that supports the main article topic.\n- Throughout the article, insert additional images, charts, or infographics wherever they enhance clarity and reader understanding (not forcefully—only where naturally appropriate).\n- Include a Key Takeaways section immediately after the first intro paragraph and before the first H2 heading.\n- Include a Some Useful Resources section at the end of the article, featuring relevant internal and external resource links (use institutional/resource references, not made-up URLs).\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        1360,
+        -192
+      ],
+      "id": "bf2abec0-6453-45b0-b146-90f5c207c948",
+      "name": "Write Blog"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1776,
+        80
+      ],
+      "id": "7f48012d-3316-4c28-a0c8-7ee96985b470",
+      "name": "Google Gemini Chat Model3",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "Ah3AyC6bmcvPBNXi",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "tngtech/deepseek-r1t2-chimera:free",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        224,
+        272
+      ],
+      "id": "7cf9f4a5-66c0-44a3-b09c-c9b11c45d2ec",
+      "name": "PP - DeepSeek R1",
+      "credentials": {
+        "openRouterApi": {
+          "id": "idsnxZsyUpzZmKPC",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "tngtech/deepseek-r1t2-chimera:free",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        1008,
+        80
+      ],
+      "id": "08120843-2ea1-42b8-964c-6a686c7ef388",
+      "name": "DP - DeepSeek R1",
+      "credentials": {
+        "openRouterApi": {
+          "id": "idsnxZsyUpzZmKPC",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "anthropic/claude-3.5-sonnet",
+        "options": {
+          "maxTokens": 30000,
+          "timeout": 1800000
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        1360,
+        80
+      ],
+      "id": "db9d6bad-fff4-47d7-9db8-09103f724b75",
+      "name": "BR - Claude 3.5 Sonnet",
+      "credentials": {
+        "openRouterApi": {
+          "id": "idsnxZsyUpzZmKPC",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "sonar-pro",
+        "messages": {
+          "message": [
+            {
+              "content": "=You are a research specialist using real-time web search to support a content team\nwriting for sahkitchenequipment.com, an online store for commercial kitchen and foodservice equipment.\n\nYour goal is to perform STRUCTURED, CITATION-RICH RESEARCH to support a single blog post.\n\nINPUTS:\n- Preliminary content plan (JSON): {{ $json.output }}\n- Geography: Focus on the United States market.\n- Brands to prioritize where relevant: {{ $('Post Input').item.json['Brand Focus'] }} for residential/prosumer context.\n\nRESEARCH OBJECTIVES:\n1. Understand the topic context\n   - Summarize the core topic in 3–5 sentences.\n   - Clarify why this topic matters to the specified target audience NOW (cost pressures, regulations, trends, etc.).\n\n2. SERP & competitor content analysis\n   - Identify 5–10 of the most relevant, high-quality pages currently ranking or authoritative for the primary keyword\n     and closely related keywords.\n   - For each: capture URL, site name, content type (guide, product page, comparison, spec sheet, etc.),\n     and a 1–2 sentence summary of what they cover.\n   - Identify obvious content gaps and angles NOT well covered that sahkitchenequipment.com can own.\n\n3. Subtopics & structure support\n   - Propose 6–10 MUST-COVER subtopics or questions that the final article should address to beat current competition.\n   - Map each proposed subtopic to:\n     - Search intent (informational vs commercial).\n     - Buyer stage (awareness / consideration / decision).\n     - Which brand(s), if any, can be naturally discussed ({{ $('Post Input').item.json['Brand Focus'] }}).\n\n4. Data, standards, and proof\n   - Find recent, credible data points relevant to the topic (market size, growth, energy savings, ROI ranges,\n     lifespan of equipment, code requirements, etc.).\n   - For each data point, provide:\n     - Short description.\n     - Numeric value(s).\n     - Year.\n     - Source URL.\n   - Prioritize reputable sources (industry reports, government/energy agencies, major manufacturers).\n\n5. Inspiration for tools/downloads\n   - Suggest 3–5 concrete ideas for checklists, calculators, spec bundles, or templates\n     that would be genuinely useful to the target audience based on this topic.\n\nINSTRUCTIONS:\n- Use deep, multi-source research mode where available.\n- Provide explicit citations/links for all factual claims and statistics.\n- Do NOT write the article itself; focus on research that will feed a planning and writing agent.\n- Keep explanations concise but complete.\n\nOUTPUT FORMAT (Markdown with clear sections):\n\n# Topic summary\n[3–5 sentence overview]\n\n# Audience & timing\n[2–4 sentences on why this matters now]\n\n# SERP and competitor overview\n- Item 1: [Title] – URL – site – type – 1–2 sentence summary\n- ...\n\n# Content gaps & differentiation opportunities\n- Bullet list of 5–10 gaps/angles we can exploit.\n\n# Recommended subtopics and questions\nFor each item:\n- Subtopic/question:\n- Intent:\n- Buyer stage:\n- Relevant brand focus:\n- Notes:\n\n# Key data & proof points\n- Data point:\n  - Details:\n  - Year:\n  - Source: URL\n\n# Ideas for tools and downloads\n- Idea:\n  - Type:\n  - Description:\n  - Where it could appear in the article."
+            }
+          ]
+        },
+        "options": {},
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.perplexity",
+      "typeVersion": 1,
+      "position": [
+        624,
+        0
+      ],
+      "id": "9a6cd815-96d7-43bb-9dfb-38934fb9136f",
+      "name": "Blog Research",
+      "credentials": {
+        "perplexityApi": {
+          "id": "vCUQGFPX28AMnTJm",
+          "name": "Perplexity account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "12f7KDbLc4XKqwnFPpVKJ0ofT4rlqp1LRL6giHkb5sTQ",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 138644956,
+          "mode": "list",
+          "cachedResultName": "Posts",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/12f7KDbLc4XKqwnFPpVKJ0ofT4rlqp1LRL6giHkb5sTQ/edit#gid=138644956"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Completed",
+              "lookupValue": "No"
+            }
+          ]
+        },
+        "options": {
+          "returnFirstMatch": true
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -64,
+        0
+      ],
+      "id": "3551afb6-ee39-41b0-8d9f-fb11d163bf95",
+      "name": "Post Input",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "VVym3egTu9EE5ra8",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Post Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTML Version": {
+      "main": [
+        [
+          {
+            "node": "slug",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "slug": {
+      "main": [
+        [
+          {
+            "node": "Title",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Title": {
+      "main": [
+        [
+          {
+            "node": "Meta Description",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Meta Description": {
+      "main": [
+        [
+          {
+            "node": "Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Image": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Create a post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preliminary Plan": {
+      "main": [
+        [
+          {
+            "node": "Blog Research",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Detailed Post Plan": {
+      "main": [
+        [
+          {
+            "node": "Write Blog",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "HTML Version",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Write Blog": {
+      "main": [
+        [
+          {
+            "node": "HTML Version",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PP - DeepSeek R1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Preliminary Plan",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DP - DeepSeek R1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Detailed Post Plan",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "BR - Claude 3.5 Sonnet": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Write Blog",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Blog Research": {
+      "main": [
+        [
+          {
+            "node": "Detailed Post Plan",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Post Input": {
+      "main": [
+        [
+          {
+            "node": "Preliminary Plan",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "13a2787b-d3d6-48d4-a294-303d6fcc2fcd",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "37ee74431af36e5f6e2177b0b6e0ba77f82f98e5f13559f1dbfcc6190c6b5601"
+  },
+  "id": "GvwkFXi36L7bjhT1",
+  "tags": []
+}
